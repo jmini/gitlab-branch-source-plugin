@@ -234,8 +234,10 @@ public class GitLabSCMNavigator extends SCMNavigator {
             List<Project> projects;
             if (gitlabOwner instanceof GitLabUser) {
                 // Even returns the group projects owned by the user
+                System.out.println("XXXXXX:"+ projectOwner);
                 projects = gitLabApi.getProjectApi()
                     .getUserProjects(projectOwner, new ProjectFilter().withOwned(true));
+                System.out.println("XXXXXX:"+ projects);
             } else {
                 isGroup = true;
                 GroupProjectsFilter groupProjectsFilter = new GroupProjectsFilter();
@@ -257,6 +259,8 @@ public class GitLabSCMNavigator extends SCMNavigator {
                 webHookUrl = GitLabHookCreator.getHookUrl(server, true);
             }
             for (Project p : projects) {
+                System.out.println("XXX:"+ p.getId());
+                System.out.println("XXX:"+ p.getArchived());
                 count++;
                 String projectPathWithNamespace = p.getPathWithNamespace();
                 String projectOwner = getProjectOwnerFromNamespace(projectPathWithNamespace);
@@ -268,7 +272,7 @@ public class GitLabSCMNavigator extends SCMNavigator {
                             HyperlinkNote.encodeTo(p.getWebUrl(), p.getName()));
                     continue;
                 }
-                if (p.getArchived() && context.isExcludeArchivedRepositories()) {
+                if (p.getArchived() != null && p.getArchived() && context.isExcludeArchivedRepositories()) {
                     observer.getListener().getLogger()
                         .format("%nIgnoring archived project %s%n",
                             HyperlinkNote.encodeTo(p.getWebUrl(), p.getName()));
